@@ -37,6 +37,7 @@
 .globl inthandler5
 .globl inthandler6
 .globl inthandler7
+.globl inthandler
 
 badsys:
 	movel	#-ENOSYS,%sp@(PT_OFF_D0)

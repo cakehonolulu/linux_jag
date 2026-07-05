@@ -17,6 +17,7 @@
 
 .section .romvec
 
+.global e_vectors
 e_vectors:
 .long CONFIG_RAMBASE+CONFIG_RAMSIZE-4, _start, buserr, trap
 .long trap, trap, trap, trap
