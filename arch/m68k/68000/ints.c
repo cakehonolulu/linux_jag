@@ -19,12 +19,23 @@
 #include <asm/io.h>
 #include <asm/machdep.h>
 
+#ifdef CONFIG_JAGUAR
+extern unsigned short jaguar_int1_enable;
+#define TOM_BASE 0xF00000
+#define INT1 (*(volatile unsigned short *)(TOM_BASE + 0xE0))
+#define INT2 (*(volatile unsigned short *)(TOM_BASE + 0xE2))
+#define INT1_VIDENA 0x0001
+#define INT1_PITENA 0x0008
+#define INT1_VIDCLR 0x0100
+#define INT1_PITCLR 0x0800
+#else
 #if defined(CONFIG_M68EZ328)
 #include <asm/MC68EZ328.h>
 #elif defined(CONFIG_M68VZ328)
 #include <asm/MC68VZ328.h>
 #else
 #include <asm/MC68328.h>
+#endif
 #endif
 
 #include "ints.h"
@@ -70,6 +81,48 @@ asmlinkage irqreturn_t inthandler4(void);
 asmlinkage irqreturn_t inthandler5(void);
 asmlinkage irqreturn_t inthandler6(void);
 asmlinkage irqreturn_t inthandler7(void);
+
+#ifdef CONFIG_JAGUAR
+asmlinkage void process_int(int vec, struct pt_regs *fp)
+{
+	unsigned short pending = INT1;
+	unsigned short ack = 0;
+
+	if (pending & INT1_VIDENA) {
+		do_IRQ(1, fp);
+		ack |= INT1_VIDCLR;
+	}
+
+	if (pending & INT1_PITENA) {
+		do_IRQ(2, fp);
+		ack |= INT1_PITCLR;
+	}
+
+	INT1 = jaguar_int1_enable | ack;
+	INT2 = 0;
+}
+
+static void intc_irq_unmask(struct irq_data *d)
+{
+	if (d->irq == 1) jaguar_int1_enable |= INT1_VIDENA;
+	if (d->irq == 2) jaguar_int1_enable |= INT1_PITENA;
+	INT1 = jaguar_int1_enable;
+}
+
+static void intc_irq_mask(struct irq_data *d)
+{
+	if (d->irq == 1) jaguar_int1_enable &= ~INT1_VIDENA;
+	if (d->irq == 2) jaguar_int1_enable &= ~INT1_PITENA;
+	INT1 = jaguar_int1_enable;
+}
+
+static struct irq_chip intc_irq_chip = {
+	.name = "JAGUAR-INTC",
+	.irq_mask = intc_irq_mask,
+	.irq_unmask	= intc_irq_unmask,
+};
+
+#else
 
 /* The 68k family did not have a good way to determine the source
  * of interrupts until later in the family.  The EC000 core does
@@ -149,6 +202,8 @@ static struct irq_chip intc_irq_chip = {
 	.irq_unmask	= intc_irq_unmask,
 };
 
+#endif /* CONFIG_JAGUAR */
+
 /*
  * This function should be called during kernel startup to initialize
  * the machine vector table.
@@ -163,6 +218,10 @@ void __init trap_init(void)
 
 	_ramvec[32] = system_call;
 
+#ifdef CONFIG_JAGUAR
+	_ramvec[64] = (e_vector) inthandler;
+#endif
+
 	_ramvec[65] = (e_vector) inthandler1;
 	_ramvec[66] = (e_vector) inthandler2;
 	_ramvec[67] = (e_vector) inthandler3;
@@ -176,10 +235,16 @@ void __init init_IRQ(void)
 {
 	int i;
 
+#ifdef CONFIG_JAGUAR
+	jaguar_int1_enable = 0;
+	INT1 = 0;
+	INT2 = 0;
+#else
 	IVR = 0x40; /* Set DragonBall IVR (interrupt base) to 64 */
 
 	/* turn off all interrupts */
 	IMR = ~0;
+#endif
 
 	for (i = 0; (i < NR_IRQS); i++) {
 		irq_set_chip(i, &intc_irq_chip);
