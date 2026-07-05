@@ -324,6 +324,14 @@ config MOD5272
 	help
 	  Support for the Netburner MOD-5272 board.
 
+config JAGUAR
+        bool "Atari Jaguar support"
+        depends on !MMU
+        select M68000
+        select GENERIC_CALIBRATE_DELAY
+        help
+          Enable support for the Atari Jaguar console.
+
 if !MMU || COLDFIRE
 
 comment "Machine Options"
