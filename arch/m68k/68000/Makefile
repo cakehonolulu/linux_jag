@@ -10,7 +10,7 @@
 
 # 68328, 68EZ328, 68VZ328
 
-obj-y			+= entry.o ints.o timers.o m68328.o
+obj-y			+= entry.o ints.o timers.o
 obj-$(CONFIG_ROM)	+= romvec.o
 
 obj-$(CONFIG_DRAGEN2)	+= dragen2.o
@@ -18,3 +18,8 @@ obj-$(CONFIG_UCSIMM)	+= ucsimm.o
 obj-$(CONFIG_UCDIMM)	+= ucsimm.o
 
 obj-y			+= head.o
+obj-$(CONFIG_JAGUAR)	+= jaguar.o jaguar_video.o
+
+ifndef CONFIG_JAGUAR
+obj-y += m68328.o
+endif
