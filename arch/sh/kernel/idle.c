@@ -23,12 +23,17 @@ static void (*sh_idle)(void);
 
 void default_idle(void)
 {
+#ifndef CONFIG_CPU_SUBTYPE_SH7604
 	set_bl_bit();
 	raw_local_irq_enable();
 	/* Isn't this racy ? */
 	cpu_sleep();
 	raw_local_irq_disable();
 	clear_bl_bit();
+#else
+	raw_local_irq_enable();
+	cpu_relax();
+#endif
 }
 
 void __noreturn arch_cpu_idle_dead(void)
