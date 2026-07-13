@@ -332,6 +332,10 @@ config RENESAS_RZV2H_ICU
 	help
 	  Enable support for the Renesas RZ/V2H(P) Interrupt Control Unit (ICU)
 
+config SH7604_INTC
+	bool "SH7604 interrupt controller (Sega 32X / Saturn SH2)" if COMPILE_TEST
+	depends on SUPERH || COMPILE_TEST
+
 config SL28CPLD_INTC
 	bool "Kontron sl28cpld IRQ controller"
 	depends on MFD_SL28CPLD=y || COMPILE_TEST
