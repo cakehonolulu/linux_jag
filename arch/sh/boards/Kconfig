@@ -30,6 +30,22 @@ config SH_JCORE_SOC
 	  Select this option to include drivers core components of the
 	  J-Core SoC, including interrupt controllers and timers.
 
+config SH_MARS
+	bool "Sega 32X"
+	depends on CPU_SUBTYPE_SH7604
+	select SH_DEVICE_TREE
+	select SH7604_INTC
+	select SH7604_FRT_TIMER
+	select SERIAL_CORE
+	select SERIAL_CORE_CONSOLE
+	select SERIAL_EARLYCON
+	select SYS_SUPPORTS_SMP
+	help
+	  Sega 32X. UART is proxied to the Genesis using the "MARS" communication registers.
+
+config SH_MARS_SMP
+	def_bool SMP && SH_MARS
+
 config SH_SOLUTION_ENGINE
 	bool "SolutionEngine"
 	select SOLUTION_ENGINE
