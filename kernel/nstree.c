@@ -548,6 +548,14 @@ static inline struct ns_common *__must_check legitimize_ns(const struct klistns 
 	return no_free_ptr(ns);
 }
 
+static noinline int emit_ns_id(u64 __user *dst, u64 id)
+{
+	/*
+		sh2eb gcc compiler has an ICE if I don't extract this logic out...
+	*/
+	return copy_to_user(dst, &id, sizeof(id)) ? -EFAULT : 0;
+}
+
 static ssize_t do_listns_userns(struct klistns *kls)
 {
 	u64 __user *ns_ids = kls->uns_ids;
@@ -602,7 +610,7 @@ static ssize_t do_listns_userns(struct klistns *kls)
 		ns_put(prev);
 		prev = valid;
 
-		if (put_user(valid->ns_id, ns_ids + ret)) {
+		if (emit_ns_id(ns_ids + ret, valid->ns_id)) {
 			ns_put(prev);
 			return -EFAULT;
 		}
@@ -744,7 +752,7 @@ static ssize_t do_listns(struct klistns *kls)
 		ns_put(prev);
 		prev = valid;
 
-		if (put_user(valid->ns_id, ns_ids + ret)) {
+		if (emit_ns_id(ns_ids + ret, valid->ns_id)) {
 			ns_put(prev);
 			return -EFAULT;
 		}
