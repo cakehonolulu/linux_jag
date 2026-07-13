@@ -65,8 +65,17 @@ ENTRY(csum_partial)
 	bf	2f
 	add	#1, r6
 2:
+#ifdef CONFIG_CPU_SUBTYPE_SH7604
+	! We don't have variable-width shifts on SH7604
+	! so we manually "unroll" it into 2+1 shifts
+	shlr2	r5
+	shlr2	r5
+	shlr	r5
+#else
 	mov	#-5, r0
 	shld	r0, r5
+#endif
+
 	tst	r5, r5
 	bt/s	4f		! if it's =0, go to 4f
 	 clrt
@@ -234,8 +243,15 @@ EXC(	mov.w	r0,@r5		)
 	addc	r0,r7
 2:
 	mov	r6,r2
+#ifdef CONFIG_CPU_SUBTYPE_SH7604
+	! Same as above
+	shlr2	r6
+	shlr2	r6
+	shlr	r6
+#else
 	mov	#-5,r0
 	shld	r0,r6
+#endif
 	tst	r6,r6
 	bt/s	2f
 	 clrt
