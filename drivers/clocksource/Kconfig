@@ -793,6 +793,11 @@ config RTK_SYSTIMER
 	  this option only when building for a Realtek platform or for compilation
 	  testing.
 
+config SH7604_FRT_TIMER
+	bool "SH7604 free-running timer (Sega 32X / Saturn SH2)" if COMPILE_TEST
+	depends on SUPERH || COMPILE_TEST
+	select TIMER_OF
+
 choice
 	prompt "NXP clocksource for scheduler clock"
 	depends on SOC_VF610 || ARCH_S32
