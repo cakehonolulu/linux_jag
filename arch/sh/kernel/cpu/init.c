@@ -103,7 +103,7 @@ void __attribute__ ((weak)) l2_cache_init(void)
 /*
  * Generic first-level cache init
  */
-#if !defined(CONFIG_CPU_J2)
+#if !defined(CONFIG_CPU_J2) && !defined(CONFIG_CPU_SUBTYPE_SH7604)
 static void cache_init(void)
 {
 	unsigned long ccr, flags;
