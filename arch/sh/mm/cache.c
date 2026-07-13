@@ -322,7 +322,9 @@ void __init cpu_cache_init(void)
 	if (boot_cpu_data.type == CPU_J2) {
 		j2_cache_init();
 	} else if (boot_cpu_data.family == CPU_FAMILY_SH2) {
+#if !defined(CONFIG_CPU_SUBTYPE_SH7604)
 		sh2_cache_init();
+#endif
 	}
 
 	if (boot_cpu_data.family == CPU_FAMILY_SH2A) {
