@@ -321,6 +321,20 @@ ENTRY(_stext)
 	 mov	r12, r4
 #endif
 
+#ifdef CONFIG_CPU_SUBTYPE_SH7604
+	mov.l   .L_ccr_addr, r0
+    mov.b   @r0, r1
+    
+    mov     #1, r2         ! CCR_CACHE_CE
+    not     r2, r2         
+    and     r2, r1         
+    
+    mov     #8, r2         ! CCR_CACHE_CF
+    or      r2, r1         
+    
+    mov.b   r1, @r0
+#endif
+
 	!			Additional CPU initialization
 	mov.l	6f, r0
 	jsr	@r0
@@ -333,6 +347,10 @@ ENTRY(_stext)
 	jmp	@r0
 	 nop
 
+#ifdef CONFIG_CPU_SUBTYPE_SH7604
+.align 2
+.L_ccr_addr:    .long 0xfffffe92
+#endif
 	.balign 4
 #if defined(CONFIG_CPU_SH2)
 1:	.long	0x000000F0		! IMASK=0xF
