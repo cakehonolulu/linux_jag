@@ -2,7 +2,7 @@
 #ifndef __ASM_SH_ATOMIC_H
 #define __ASM_SH_ATOMIC_H
 
-#if defined(CONFIG_CPU_J2)
+#if defined(CONFIG_CPU_J2) || defined(CONFIG_SH_MARS_SMP)
 
 #include <asm-generic/atomic.h>
 

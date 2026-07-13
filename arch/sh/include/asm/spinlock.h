@@ -12,6 +12,8 @@
 #include <asm/spinlock-llsc.h>
 #elif defined(CONFIG_CPU_J2)
 #include <asm/spinlock-cas.h>
+#elif defined(CONFIG_SH_MARS_SMP)
+#include <asm/spinlock-mars.h>
 #else
 #error "The configured cpu type does not support spinlocks"
 #endif

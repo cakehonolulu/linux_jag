@@ -19,6 +19,8 @@ udivsi3-y			+= udivsi3.o
 
 obj-y				+= io.o
 
+obj-$(CONFIG_SH_MARS_SMP) += atomic-mars.o
+
 memcpy-y			:= memcpy.o
 memcpy-$(CONFIG_CPU_SH4)	:= memcpy-sh4.o
 

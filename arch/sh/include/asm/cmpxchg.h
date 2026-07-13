@@ -17,6 +17,8 @@
 #include <asm/cmpxchg-llsc.h>
 #elif defined(CONFIG_CPU_J2) && defined(CONFIG_SMP)
 #include <asm/cmpxchg-cas.h>
+#elif defined(CONFIG_SH_MARS_SMP)
+#include <asm/cmpxchg-mars.h>
 #else
 #include <asm/cmpxchg-irq.h>
 #endif
