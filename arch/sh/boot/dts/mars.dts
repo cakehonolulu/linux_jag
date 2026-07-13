@@ -1,0 +1,79 @@
+/dts-v1/;
+
+/ {
+	model = "Sega 32X";
+	compatible = "sega,mars";
+	#address-cells = <1>;
+	#size-cells = <1>;
+
+	chosen {
+		stdout-path = &marscon;
+		bootargs = "";
+	};
+
+	cpus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		cpu@0 {
+			device_type = "cpu";
+			compatible = "renesas,sh7604";
+			reg = <0>;
+			clock-frequency = <23011360>;
+		};
+
+		cpu@1 {
+			device_type = "cpu";
+			compatible = "renesas,sh7604";
+			reg = <1>;
+			clock-frequency = <23011360>;
+			enable-method = "sega,mars-spin-table";
+		};
+	};
+
+	intc: interrupt-controller {
+		compatible = "renesas,sh7604-intc";
+		interrupt-controller;
+		#interrupt-cells = <1>;
+	};
+
+	frt: timer@fffffe10 {
+		compatible = "renesas,sh7604-frt";
+		reg = <0xfffffe10 0x8>;
+		interrupt-parent = <&intc>;
+		interrupts = <72>;
+		clock-frequency = <23011360>;
+	};
+
+	reserved-memory {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+
+		smp_mbox: smp-mailbox@2603fff0 {
+			reg = <0x2603fff0 0x10>;
+			no-map;
+		};
+	};
+
+	/*
+	 * Cart "RAM"
+	 */
+	memory@22080000 {
+		device_type = "memory";
+		reg = <0x22080000 0x00380000>;
+	};
+
+	/*
+	 * 32X Work RAM
+	 */
+	memory@6000000 {
+                device_type = "memory";
+                reg = <0x06000000 0x00040000>;
+        };
+
+	marscon: console@20004020 {
+		compatible = "sega,mars-comm";
+		reg = <0x20004020 0x10>;
+	};
+};
